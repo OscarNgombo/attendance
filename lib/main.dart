@@ -1,20 +1,41 @@
+import 'package:attendance/bindings/auth.dart';
 import 'package:attendance/bindings/home_Screen.dart';
+import 'package:attendance/screens/login.dart';
+import 'package:attendance/screens/sign_up.dart';
+import 'package:attendance/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'screens/my_home_page.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 Future<void> main() async {
-  runApp(const MyApp(),);
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+
   const MyApp({super.key});
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final authService = Get.put(AuthMethods());
+  @override
+  void initState() {
+    authService.isUserLoggedIn();
+    super.initState();
+  }
   // This widget is the root of the application.
   @override
   Widget build(BuildContext context) {
+
     return GetMaterialApp(
       title: 'Attendance',
       theme: ThemeData(
@@ -26,8 +47,10 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.light,
       darkTheme: ThemeData.dark(),
-      initialRoute: '/home',
+      initialRoute: authService.isUserLoggedIn()? '/home':'/login' ,
       getPages: [
+        GetPage(name: '/login', page: ()=>const LoginWidget(),binding: AuthBinding()),
+    GetPage(name: '/signup', page: ()=>const SignupWidget(),binding: AuthBinding()),
         GetPage(
           name: '/home',
           page: () => const MyHomePage(

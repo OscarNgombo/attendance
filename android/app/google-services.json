@@ -12,7 +12,20 @@
           "package_name": "com.oscarngombo.attendance"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "803026127450-rm29av0a9q8p5sufh5b3fivno26smh8e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.oscarngombo.attendance",
+            "certificate_hash": "12ea1b5e14f6f34184f37fb2dc58b4647a324068"
+          }
+        },
+        {
+          "client_id": "803026127450-9b5n4b6tjst36fa4ifqer3osgeujbob3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDjcHEFI37EBnyjeMYkwzpnOBSih2iGtsg"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "803026127450-9b5n4b6tjst36fa4ifqer3osgeujbob3.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "803026127450-qf69iicnfv0iaoqsothgl59afq82h8p8.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.attendance"
+              }
+            }
+          ]
         }
       }
     }

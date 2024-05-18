@@ -1,5 +1,6 @@
 
 import 'package:attendance/controllers/geolocator/geolocator_controller.dart';
+import 'package:attendance/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
@@ -15,6 +16,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final LocationService locationService = Get.find();
+  final AuthMethods authService = Get.find();
   @override
   void initState() {
     locationService.getDeviceId();
@@ -27,8 +29,28 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-        centerTitle: true,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Text(widget.title),
+            TextButton(
+              onPressed: ()=> {
+                authService.signOut,
+              Navigator.popUntil(context, ModalRoute.withName("/login"))
+              },
+
+              style: ButtonStyle(
+                backgroundColor: WidgetStateProperty.all(Theme.of(context).colorScheme.inversePrimary),
+              ),
+              child: Row(children: [const Text("Logout"),
+                const SizedBox(width: 5,),
+                Icon(Icons.logout_outlined,fill: 1.0,color: Colors.blue[600],)],
+              ),
+            )
+
+          ],
+        ),
       ),
       body: FutureBuilder(
         future: locationService.fetchLocation(),
