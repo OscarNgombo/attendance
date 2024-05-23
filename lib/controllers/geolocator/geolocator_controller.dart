@@ -45,34 +45,35 @@ class LocationService extends GetxController {
         Geolocator.distanceBetween(workLat, workLon, currentLat, currentLon);
     return distanceInMeters.toInt().round();
   }
-  String deviceIdentifier = '';
-  Future<String?> getDeviceId() async {
-  DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-  if (kIsWeb) {
-    final WebBrowserInfo webInfo = await deviceInfo.webBrowserInfo;
-    deviceIdentifier = webInfo.vendor! +
-        webInfo.userAgent! +
-        webInfo.hardwareConcurrency.toString();
-  } else {
-    switch (Platform.operatingSystem) {
-      case 'android':
-        final AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-        deviceIdentifier = androidInfo.id;
-        break;
-      case 'ios':
-        final IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
-        deviceIdentifier = iosInfo.identifierForVendor!;
-        break;
-      case 'windows':
-        final WindowsDeviceInfo windowsInfo = await deviceInfo.windowsInfo;
-        deviceIdentifier = windowsInfo.deviceId;
-        break;
-      default:
-      // Handle other platforms here if needed
-        break;
-    }
 
-  }
-  return deviceIdentifier;
+  String deviceIdentifier = '';
+  // Function to get the device identifier
+  Future<String?> getDeviceId() async {
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    if (kIsWeb) {
+      final WebBrowserInfo webInfo = await deviceInfo.webBrowserInfo;
+      deviceIdentifier = webInfo.vendor! +
+          webInfo.userAgent! +
+          webInfo.hardwareConcurrency.toString();
+    } else {
+      switch (Platform.operatingSystem) {
+        case 'android':
+          final AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+          deviceIdentifier = androidInfo.id;
+          break;
+        case 'ios':
+          final IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+          deviceIdentifier = iosInfo.identifierForVendor!;
+          break;
+        case 'windows':
+          final WindowsDeviceInfo windowsInfo = await deviceInfo.windowsInfo;
+          deviceIdentifier = windowsInfo.deviceId;
+          break;
+        default:
+          // Handle other platforms here if needed
+          break;
+      }
+    }
+    return deviceIdentifier;
   }
 }
