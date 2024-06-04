@@ -2,16 +2,30 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:attendance/models/chart.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-
-class DbData extends GetxController{
+class DbData extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final DatabaseReference _userDatabaseReference = FirebaseDatabase.instance.ref().child('users');
-  final DatabaseReference _checkIn = FirebaseDatabase.instance.ref().child('checkIn');
+  final DatabaseReference _userDatabaseReference =
+      FirebaseDatabase.instance.ref().child('users');
+  final DatabaseReference _checkIn =
+      FirebaseDatabase.instance.ref().child('checkIn');
+  final DatabaseReference _checkOut =
+      FirebaseDatabase.instance.ref().child('checkOut');
+  // Get the logged-in user ID.
+  final loggedInUserId = FirebaseAuth.instance.currentUser?.uid;
+  DateTime currentDateTime = DateTime.now();
+
+  @override
+  void onInit() {
+    super.onInit();
+    syncUserInformation();
+  }
+
 // Method to sync user information with the database
   Future<void> syncUserInformation() async {
     User? currentUser = _auth.currentUser;
@@ -26,42 +40,171 @@ class DbData extends GetxController{
       // Store the user information in the database
       await _userDatabaseReference.child(userId).set({
         'email': userEmail,
-        'phone':userPhone,
-        'name':userName,
-        'profileURL':profileUrl,
+        'phone': userPhone,
+        'name': userName,
+        'profileURL': profileUrl,
         // Other user-related information fields
       });
     }
   }
-  DateTime currentDateTime = DateTime.now();
-
-  @override
-  void onInit() {
-    // TODO: implement onInit
-    super.onInit();
-    syncUserInformation();
-  }
-
 
   Future<void> createCheckIn(
-      {required String userId, required String location, required String deviceId}) {
+      {required String userId,
+      required String location,
+      required String deviceId}) {
     String currentDate = DateFormat('yyyy-MM-dd').format(currentDateTime);
     String currentTime = DateFormat('HH:mm:ss').format(currentDateTime);
 
-    return _checkIn.child(userId).set({
-      'location':location,
+    return _checkIn.push().set({
+      'userID': userId,
+      'location': location,
       'deviceID': deviceId,
-      'date':currentDate,
+      'date': currentDate,
       'time': currentTime,
     });
-
   }
-  readData() {
-      _checkIn.onValue.listen((event) {
-        DataSnapshot dataSnapshot = event.snapshot;
-        Object? values = dataSnapshot.value;
-        log(values.toString());
-      });
+
+  Future<Map<String, dynamic>> readData() async {
+    final snapshot = await _checkIn.get();
+    if (snapshot.exists) {
+      return snapshot.value as Map<String, dynamic>;
+    } else {
+      return {};
     }
   }
 
+  readDataBasedOnLoggedInUser() {
+    // Query the database based on the logged-in user ID.
+    final query = FirebaseDatabase.instance
+        .ref('checkIn')
+        .orderByChild('userID')
+        .equalTo(loggedInUserId);
+    // Listen for data changes.
+    query.onValue.listen((event) {
+      final snapshot = event.snapshot;
+      if (snapshot.exists) {
+        // Extract the data and print it to the console.
+        for (var childSnapshot in snapshot.children) {
+          // log(childSnapshot.value.toString());
+        }
+      }
+    });
+  }
+
+  Future<bool> hasTodaysCheckIn() async {
+    // Get today's date.
+    final todaysDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+    // Create a Completer to handle the asynchronous operation and return the boolean result.
+    Completer<bool> completer = Completer<bool>();
+
+    // Query the database based on the logged-in user ID and today's date.
+    final query = FirebaseDatabase.instance
+        .ref('checkIn')
+        .orderByChild('userID')
+        .equalTo(loggedInUserId);
+
+    // Listen for a single value event.
+    query.onValue.listen((event) {
+      final snapshot = event.snapshot;
+      if (snapshot.exists) {
+        // Check if the user has a check-in for today.
+        bool hasTodaysCheckIn = false;
+        for (var childSnapshot in snapshot.children) {
+          final date = childSnapshot.child("date").value.toString();
+          if (date == todaysDate) {
+            hasTodaysCheckIn = true;
+            // log(childSnapshot.value.toString());
+            completer.complete(hasTodaysCheckIn);
+            break;
+          }
+        }
+        completer.complete(hasTodaysCheckIn);
+      } else {
+        completer.complete(false); // User has no check-ins
+      }
+    });
+    return completer.future;
+  }
+
+  Future<void> createCheckOut(
+      {required String userId,
+      required String location,
+      required String deviceId}) {
+    String currentDate = DateFormat('yyyy-MM-dd').format(currentDateTime);
+    String currentTime = DateFormat('HH:mm:ss').format(currentDateTime);
+
+    return _checkOut.push().set({
+      'userID': userId,
+      'location': location,
+      'deviceID': deviceId,
+      'date': currentDate,
+      'time': currentTime,
+    });
+  }
+
+  Future<bool> checkOutStatus() async {
+    // Get today's date.
+    final todaysDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+    // Create a Completer to handle the asynchronous operation and return the boolean result.
+    Completer<bool> completer = Completer<bool>();
+
+    // Query the database based on the logged-in user ID and today's date.
+    final query = FirebaseDatabase.instance
+        .ref('checkOut')
+        .orderByChild('userID')
+        .equalTo(loggedInUserId);
+
+    // Listen for a single value event.
+    query.onValue.listen((event) {
+      final snapshot = event.snapshot;
+      if (snapshot.exists) {
+        // Check if the user has a check-in for today.
+        bool hasTodaysCheckIn = false;
+        for (var childSnapshot in snapshot.children) {
+          final date = childSnapshot.child("date").value.toString();
+          if (date == todaysDate) {
+            hasTodaysCheckIn = true;
+            // log(childSnapshot.value.toString());
+            break;
+          }
+        }
+        completer.complete(hasTodaysCheckIn);
+      } else {
+        completer.complete(false); // User has no check-ins
+      }
+    });
+
+    return completer.future;
+  }
+
+  Future<List<DataPoint>> userGraphData() async {
+    List<DataPoint> dataPoints = [];
+
+    try {
+      final snapshot = FirebaseDatabase.instance
+          .ref('checkIn')
+          .orderByChild('userID')
+          .equalTo(loggedInUserId); // Function to query the database
+
+      if (snapshot.onValue is Map) {
+        Map<dynamic, dynamic> values =
+            snapshot.onValue as Map<dynamic, dynamic>;
+
+        values.forEach((key, value) {
+          if (value is Map<String, dynamic>) {
+            DateTime date = DateTime.parse(value['date']);
+            double time = double.parse(value['time']);
+            DataPoint dataPoint = DataPoint(date, time);
+            dataPoints.add(dataPoint);
+          }
+        });
+      }
+    } catch (error) {
+      print("Error fetching data: $error");
+    }
+
+    return dataPoints;
+  }
+}
