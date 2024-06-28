@@ -1,8 +1,6 @@
 import 'package:attendance/controllers/data/db_data.dart';
 import 'package:attendance/controllers/geolocator/geolocator_controller.dart';
-import 'package:attendance/models/chart.dart';
 import 'package:attendance/services/auth.dart';
-import 'package:attendance/ui/widgets/lineChart.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
@@ -96,29 +94,6 @@ class CheckInWidget extends StatelessWidget {
                             ),
                           ),
                         ),
-                        // AspectRatio(
-                        //   aspectRatio: 1.0,
-                        //   child: Expanded(
-                        //     child: FutureBuilder<List<DataPoint>>(
-                        //         future: checkIn.userGraphData(),
-                        //       builder: (context,snapshot) {
-                        //         if (snapshot.connectionState == ConnectionState.waiting) {
-                        //           return const Center(child: CircularProgressIndicator());
-                        //         } else if (snapshot.hasError) {
-                        //           return Center(child: Text('Error: ${snapshot.error}'));
-                        //         } else {
-                        //           if (snapshot.data != null) {
-                        //             // Data processing or UI rendering with non-null snapshot.data
-                        //             return SimpleLineChart.withData(snapshot.data as List<DataPoint>);
-                        //           } else {
-                        //             // Handle null or empty data case
-                        //             return const Center(child: Text('No data available'));
-                        //           }
-                        //         }
-                        //       }
-                        //     ),
-                        //   ),
-                        // ),
                       ],
                     ),
                   if (distance >= 35)
@@ -153,9 +128,6 @@ class CheckInWidget extends StatelessWidget {
                         ),
                       ],
                     ),
-                  // ListTile(
-                  //   title: Text('Your device ID is: \n ${locationService.deviceIdentifier}'),
-                  // ),
                 ],
               ),
             ),

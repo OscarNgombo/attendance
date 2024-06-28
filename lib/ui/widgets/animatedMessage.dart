@@ -1,11 +1,11 @@
-import 'package:attendance/ui/widgets/lineChart.dart';
 import 'package:flutter/material.dart';
 
 class AnimatedThankYouMessage extends StatefulWidget {
   const AnimatedThankYouMessage({super.key});
 
   @override
-  _AnimatedThankYouMessageState createState() => _AnimatedThankYouMessageState();
+  _AnimatedThankYouMessageState createState() =>
+      _AnimatedThankYouMessageState();
 }
 
 class _AnimatedThankYouMessageState extends State<AnimatedThankYouMessage>
@@ -38,16 +38,10 @@ class _AnimatedThankYouMessageState extends State<AnimatedThankYouMessage>
     return Center(
       child: Opacity(
         opacity: _animation.value,
-        child: const Center(
-          child: Column(
-            children: [
-              Text(
-                'Thank you, you have successfully checked out from work.',
-                style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
+        child: const Text(
+          'Thank you, you have successfully checked out from work today. \n Have a nice day!',
+          style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+          textAlign: TextAlign.center,
         ),
       ),
     );

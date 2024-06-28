@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:attendance/controllers/data/update_controller.dart';
 import 'package:attendance/services/auth.dart';
 import 'package:attendance/ui/widgets/snackbar.dart';
@@ -24,6 +22,12 @@ class _LoginWidgetState extends State<LoginWidget> {
   void initState() {
     super.initState();
   }
+// @override
+//   void didUpdateWidget(covariant LoginWidget oldWidget) {
+//     controller.signEmController.value.dispose();
+//     // TODO: implement didUpdateWidget
+//     super.didUpdateWidget(oldWidget);
+//   }
 
   void _submit() {
     authService
@@ -33,7 +37,7 @@ class _LoginWidgetState extends State<LoginWidget> {
         .then((onValue) async => Get.snackbar(
             "Login Successful", "You have successfully logged in",
             duration: const Duration(seconds: 3)));
- // User successfully authenticated, show success message and navigate to the home screen
+    // User successfully authenticated, show success message and navigate to the home screen
     // Future.delayed(const Duration(
     //     seconds: 3)); // Adjust the duration to match the Snackbar's duration
   }
@@ -141,7 +145,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                       padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
                       child: ElevatedButton(
                         onPressed: () {
-                         _submit();
+                          _submit();
                           // (controller.signEmController.value.isBlank == false &&
                           //     controller.signPasswordController.value.isBlank==false)
                           //     ? _submit

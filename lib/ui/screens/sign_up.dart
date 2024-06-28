@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:attendance/controllers/data/update_controller.dart';
 import 'package:attendance/services/auth.dart';
 import 'package:attendance/ui/widgets/snackbar.dart';
@@ -25,19 +23,20 @@ class _SignUpWidgetState extends State<SignUpWidget> {
     super.initState();
   }
 
-  showError(){
+  showError() {
     // "${controller.errorText}".isEmpty || "${controller.emailErrorText}".isEmpty || "${controller.phoneErrorText}".isEmpty ||"${controller.nameErrorText}".isEmpty ?
     _show = !_show;
   }
 
   void _submit() {
-    controller.errorText == null ?
-      authService.signUp(
-        email: controller.emailController.value.text,
-        password: controller.passwordController.value.text,
-        displayName: controller.nameController.value.text,
-        phoneNumber: controller.phoneController.value.text,
-      ) : null;
+    controller.errorText == null
+        ? authService.signUp(
+            email: controller.emailController.value.text,
+            password: controller.passwordController.value.text,
+            displayName: controller.nameController.value.text,
+            phoneNumber: controller.phoneController.value.text,
+          )
+        : null;
   }
 
   @override
@@ -54,55 +53,67 @@ class _SignUpWidgetState extends State<SignUpWidget> {
           shrinkWrap: true,
           children: <Widget>[
             Padding(
-              padding: const EdgeInsets.only(top: 8,bottom: 4.0,right: 10,left: 10),
+              padding: const EdgeInsets.only(
+                  top: 8, bottom: 4.0, right: 10, left: 10),
               child: TextFormField(
                 decoration: InputDecoration(
-                  border: const OutlineInputBorder(),
-                  labelText: 'Full Name',
-                  labelStyle: const TextStyle(fontSize: 24),
-                  error: _show == true ? ErrorText.showError(
-                      "${controller.nameErrorText}"):null
-                ),
+                    border: const OutlineInputBorder(),
+                    labelText: 'Full Name',
+                    labelStyle: const TextStyle(fontSize: 24),
+                    error: _show == true
+                        ? ErrorText.showError("${controller.nameErrorText}")
+                        : null),
                 keyboardType: TextInputType.name,
                 controller: controller.nameController.value,
               ),
             ),
-            const SizedBox(height: 10,),
+            const SizedBox(
+              height: 10,
+            ),
             Padding(
-              padding: const EdgeInsets.only(bottom: 4.0,right: 10,left: 10),
+              padding: const EdgeInsets.only(bottom: 4.0, right: 10, left: 10),
               child: TextFormField(
                 decoration: InputDecoration(
                     border: const OutlineInputBorder(),
                     labelText: 'Phone Number',
                     labelStyle: const TextStyle(fontSize: 18),
-                    error: _show == true ? ErrorText.showError(
-                        "${controller.phoneErrorText}"):null),
+                    error: _show == true
+                        ? ErrorText.showError("${controller.phoneErrorText}")
+                        : null),
                 keyboardType: TextInputType.phone,
                 controller: controller.phoneController.value,
               ),
             ),
-            const SizedBox(height: 10,),
+            const SizedBox(
+              height: 10,
+            ),
             Padding(
-              padding: const EdgeInsets.only(bottom: 4.0,right: 10,left: 10),
+              padding: const EdgeInsets.only(bottom: 4.0, right: 10, left: 10),
               child: TextFormField(
                 decoration: InputDecoration(
                     border: const OutlineInputBorder(),
-                    labelText: 'Email',labelStyle: const TextStyle(fontSize: 18),
-                    error: _show == true ? ErrorText.showError(
-                        "${controller.emailErrorText}"):null),
+                    labelText: 'Email',
+                    labelStyle: const TextStyle(fontSize: 18),
+                    error: _show == true
+                        ? ErrorText.showError("${controller.emailErrorText}")
+                        : null),
                 keyboardType: TextInputType.emailAddress,
                 controller: controller.emailController.value,
               ),
             ),
-            const SizedBox(height: 10,),
+            const SizedBox(
+              height: 10,
+            ),
             Padding(
-              padding: const EdgeInsets.only(bottom: 4.0,right: 10,left: 10),
+              padding: const EdgeInsets.only(bottom: 4.0, right: 10, left: 10),
               child: TextFormField(
                 decoration: InputDecoration(
                     border: const OutlineInputBorder(),
-                    labelText: 'Password',labelStyle: const TextStyle(fontSize: 18),
-                    error: _show == true ? ErrorText.showError(
-                        "${controller.errorText}"):null),
+                    labelText: 'Password',
+                    labelStyle: const TextStyle(fontSize: 18),
+                    error: _show == true
+                        ? ErrorText.showError("${controller.errorText}")
+                        : null),
                 controller: controller.passwordController.value,
                 obscureText: true,
                 validator: (value) =>
@@ -110,14 +121,17 @@ class _SignUpWidgetState extends State<SignUpWidget> {
                 onChanged: (value) => _text,
               ),
             ),
-            const SizedBox(height: 10,),
+            const SizedBox(
+              height: 10,
+            ),
             Padding(
-              padding: const EdgeInsets.only(bottom: 8.0,right: 10,left: 10),
+              padding: const EdgeInsets.only(bottom: 8.0, right: 10, left: 10),
               child: TextFormField(
                 decoration: InputDecoration(
                     labelStyle: const TextStyle(fontSize: 18),
-                    error: _show == true ? ErrorText.showError(
-                        "${controller.errorMatchText}"):null,
+                    error: _show == true
+                        ? ErrorText.showError("${controller.errorMatchText}")
+                        : null,
                     border: const OutlineInputBorder(),
                     labelText: 'Repeat Password'),
                 controller: controller.password1Controller.value,
@@ -127,18 +141,19 @@ class _SignUpWidgetState extends State<SignUpWidget> {
                 onChanged: (value) => _text,
               ),
             ),
-            const SizedBox(height: 10,),
+            const SizedBox(
+              height: 10,
+            ),
             Padding(
               padding: const EdgeInsets.only(top: 10.0),
               child: SizedBox(
                 width: 20,
                 child: ElevatedButton(
                   onPressed: () {
-                   setState(() {
-                     showError();
-                     return _submit();
-                   });
-
+                    setState(() {
+                      showError();
+                      return _submit();
+                    });
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor:

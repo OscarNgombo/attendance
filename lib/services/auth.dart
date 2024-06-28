@@ -79,13 +79,8 @@ class AuthMethods extends GetxController {
   // Sign out method
   void signOut() {
     _deleteCacheDir();
+    deleteAppDir();
     FirebaseAuth.instance.signOut();
-    // Force reauthentication to update the user's status
-    // FirebaseAuth.instance
-    //     .authStateChanges()
-    //     .listen((User? user) {
-    //   log("User after sign-out: $user");
-    // });
   }
 
   User? getCurrentUser() {
