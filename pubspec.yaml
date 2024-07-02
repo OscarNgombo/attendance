@@ -36,6 +36,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.6
   geolocator: ^12.0.0
+  flutter_reactive_value: any
   get: ^4.6.6
   device_info_plus: ^10.1.0
   firebase_core: ^2.15.0

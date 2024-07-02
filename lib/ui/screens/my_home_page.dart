@@ -5,13 +5,14 @@ import 'package:attendance/controllers/geolocator/geolocator_controller.dart';
 import 'package:attendance/services/auth.dart';
 import 'package:attendance/ui/widgets/checkIn.dart';
 import 'package:attendance/ui/widgets/checkOut.dart';
+import 'package:attendance/ui/widgets/organizedListWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+   const MyHomePage({super.key, required this.title});
 
-  final String title;
+   final String title;
 
   @override
   MyHomePageState createState() => MyHomePageState();
@@ -36,7 +37,7 @@ class MyHomePageState extends State<MyHomePage> {
 
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.secondary,
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           automaticallyImplyLeading: false,
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -49,7 +50,7 @@ class MyHomePageState extends State<MyHomePage> {
                 },
                 style: ButtonStyle(
                   backgroundColor: WidgetStateProperty.all(
-                      Theme.of(context).colorScheme.secondary),
+                      Theme.of(context).colorScheme.inversePrimary),
                 ),
                 child: Row(
                   children: [
@@ -105,7 +106,7 @@ class MyHomePageState extends State<MyHomePage> {
                       }
                     });
               } else {
-                return const Center(child: Text("Admin Content goes here"));
+                return CheckInListScreen();
               }
             } else {
               return const Center(

@@ -1,11 +1,12 @@
 import 'package:attendance/controllers/data/db_data.dart';
 import 'package:attendance/controllers/geolocator/geolocator_controller.dart';
+import 'package:attendance/models/user.dart';
 import 'package:attendance/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 
-class CheckInWidget extends StatelessWidget {
+class CheckInWidget extends StatefulWidget {
   const CheckInWidget({
     super.key,
     required this.locationService,
@@ -20,12 +21,17 @@ class CheckInWidget extends StatelessWidget {
   final String userId;
 
   @override
+  State<CheckInWidget> createState() => _CheckInWidgetState();
+}
+
+class _CheckInWidgetState extends State<CheckInWidget> {
+  @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: locationService.fetchLocation(),
+      future: widget.locationService.fetchLocation(),
       builder: (BuildContext context, AsyncSnapshot<Position> snapshot) {
         if (snapshot.hasData) {
-          int distance = locationService.calculateDistance(
+          int distance = widget.locationService.calculateDistance(
               snapshot.data!.latitude, snapshot.data!.longitude);
           return Card(
             elevation: 4,
@@ -42,39 +48,55 @@ class CheckInWidget extends StatelessWidget {
                   if (distance <= 34)
                     Column(
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: ListTile(
+                        FutureBuilder(
+                          future: widget.authService.getUsers(widget.userId),
+                          builder: (context,snapshot){
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return const Center(child: CircularProgressIndicator());
+                            } else if (snapshot.hasError) {
+                              return Center(child: Text('Error: ${snapshot.error}'));
+                            }
+                            else{
+                              List<UserProfile> users = snapshot.data ?? [];
+                              return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                            child: ListTile(
                             title: Text(
-                                'Hello ${authService.getCurrentUser()?.displayName ?? "User"}, Good to see you today please check in to work below!'),
-                          ),
+                            'Hello ${users[0].displayName ?? "User"}, Good to see you today please check in to work below!'),
+                            ),
+                            );
+                            }
+                          },
                         ),
                         Padding(
                           padding: const EdgeInsets.only(top: 16, bottom: 10),
                           child: ElevatedButton(
                             onPressed: () {
                               // Add your onPressed functionality here
-                              checkIn
-                                  .createCheckIn(
-                                      userId: userId,
-                                      location:
-                                          "${snapshot.data!.latitude}, ${snapshot.data!.longitude}",
-                                      deviceId:
-                                          locationService.deviceIdentifier)
-                                  .then((_) async => Get.snackbar(
-                                        "Check In",
-                                        "You have successfully checked in to work!",
-                                        duration: const Duration(seconds: 3),
-                                        snackPosition: SnackPosition.TOP,
-                                        backgroundColor: Theme.of(context)
-                                            .colorScheme
-                                            .inversePrimary,
-                                        colorText: Colors.white,
-                                        icon: const Icon(
-                                          Icons.check_circle,
-                                          color: Colors.white,
-                                        ),
-                                      ));
+                              setState(() {
+                                widget.checkIn
+                                    .createCheckIn(
+                                    userId: widget.userId,
+                                    location:
+                                    "${snapshot.data!.latitude}, ${snapshot.data!.longitude}",
+                                    deviceId:
+                                    widget.locationService.deviceIdentifier)
+                                    .then((_) async => Get.snackbar(
+                                  "Check In",
+                                  "You have successfully checked in to work!",
+                                  duration: const Duration(seconds: 3),
+                                  snackPosition: SnackPosition.TOP,
+                                  backgroundColor: Theme.of(context)
+                                      .colorScheme
+                                      .inversePrimary,
+                                  colorText: Colors.white,
+                                  icon: const Icon(
+                                    Icons.check_circle,
+                                    color: Colors.white,
+                                  ),
+                                ));
+                              });
+
                             },
                             style: ButtonStyle(
                               backgroundColor: WidgetStateProperty.all(
@@ -117,7 +139,7 @@ class CheckInWidget extends StatelessWidget {
                           padding: const EdgeInsets.all(8.0),
                           child: ListTile(
                             title: Text(
-                              'Distance from work is: \n${locationService.calculateDistance(snapshot.data!.latitude, snapshot.data!.longitude)} meters',
+                              'Distance from work is: \n${widget.locationService.calculateDistance(snapshot.data!.latitude, snapshot.data!.longitude)} meters',
                               style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w400,
@@ -132,7 +154,8 @@ class CheckInWidget extends StatelessWidget {
               ),
             ),
           );
-        } else if (snapshot.hasError) {
+        }
+        else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         }
         return const Center(child: CircularProgressIndicator());

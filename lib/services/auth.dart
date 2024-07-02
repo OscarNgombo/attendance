@@ -1,10 +1,12 @@
 import 'dart:developer';
 import 'package:attendance/controllers/data/update_controller.dart';
+import 'package:attendance/models/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:path_provider/path_provider.dart';
+
 
 class AuthMethods extends GetxController {
   final auth = FirebaseAuth.instance;
@@ -109,5 +111,21 @@ class AuthMethods extends GetxController {
     if (appDir.existsSync()) {
       appDir.deleteSync(recursive: true);
     }
+  }
+  Future<List<UserProfile>> getUsers(userId) async {
+    List<UserProfile> users = [];
+    final query = FirebaseDatabase.instance.ref('users');
+    DataSnapshot snapshot = await query.get();
+
+    if (snapshot.value != null && (snapshot.value as Map).isNotEmpty) {
+      Map<dynamic, dynamic>? userMap = snapshot.value as Map<dynamic, dynamic>;
+
+      userMap.forEach((key, value) {
+        UserProfile user = UserProfile.fromJson(value);
+        users.add(user);
+      });
+
+    }
+    return users;
   }
 }

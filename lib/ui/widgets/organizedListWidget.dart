@@ -1,36 +1,76 @@
+import 'package:attendance/models/user.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:attendance/controllers/data/db_data.dart';
+import 'package:attendance/models/checkIn.dart';
+import 'package:attendance/services/auth.dart';
 
-Widget createOrganizedListWidget(Map<String, List<Map<String, dynamic>>> organizedData){
-  List<Widget> dateCheckInWidgets = [];
+class CheckInListScreen extends StatelessWidget {
+  CheckInListScreen({super.key});
+  final checkIn = Get.put(DbData());
+  final authService = Get.put(AuthMethods());
 
-  // Iterate over the organized data to create list items.
-  for (var key in organizedData.keys) {
-    List<Map<String, dynamic>> listItems = organizedData[key]!;
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: checkIn.getCheckInData(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        } else if (snapshot.hasError) {
+          return Center(
+            child: Text('Data has error ${snapshot.error}'),
+          );
+        } else {
+          List<CheckInData> checkIns = snapshot.data ?? [];
+          checkIns.sort((a, b) => b.date.compareTo(a.date)); // Sort by most recent date first
+          String? mostRecentDate = checkIns.isNotEmpty ? checkIns[0].date : null;
 
-    // Create a widget to display the list items for each date and check-in time.
-    // This can be a ListView, Column, or any other widget based on your UI design.
-    Widget dateCheckInWidget = Column(
-      children: [
-        Text('Date and Check-In Time: $key'),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const ClampingScrollPhysics(),
-          itemCount: listItems.length,
-          itemBuilder: (context, index) {
-            // Customize how each list item is displayed.
-            return ListTile(
-              title: Text('Item ${index + 1}'),
-              subtitle: Text(listItems[index]['additionalData'] ?? ''),
-              // Add more widgets as needed for data display.
-            );
-          },
-        ),
-      ],
+          return ListView.builder(
+            itemCount: checkIns.length,
+            itemBuilder: (context, index) {
+              CheckInData checkInData = checkIns[index];
+              bool isActive = mostRecentDate != null && checkInData.date == mostRecentDate;
+              return FutureBuilder(
+                future: authService.getUsers(checkInData.userID),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const SizedBox(
+                      height: 100, // Placeholder height
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Text('Error occurred: ${snapshot.error}');
+                  } else {
+                    List<UserProfile> users = snapshot.data ?? [];
+                    if (users.isEmpty) {
+                      return const Text('User not found');
+                    }
+                    String userName = users[0].displayName;
+
+                    return Card(
+                      color: isActive ? Colors.greenAccent : Colors.grey, // Set color based on active/inactive status
+                      child: ListTile(
+                        title: Text('Name: $userName'),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Date: ${checkInData.date}'),
+                            Text('Time: ${checkInData.time}'),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+                },
+              );
+            },
+          );
+        }
+      },
     );
 
-    dateCheckInWidgets.add(dateCheckInWidget);
   }
-
-  // Return a widget that contains all the organized data widgets.
-  return Column(children: dateCheckInWidgets);
 }
