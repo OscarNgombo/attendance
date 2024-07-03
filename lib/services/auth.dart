@@ -112,20 +112,28 @@ class AuthMethods extends GetxController {
       appDir.deleteSync(recursive: true);
     }
   }
-  Future<List<UserProfile>> getUsers(userId) async {
+  Future<List<UserProfile>> getUsers(String userId) async {
     List<UserProfile> users = [];
     final query = FirebaseDatabase.instance.ref('users');
     DataSnapshot snapshot = await query.get();
 
-    if (snapshot.value != null && (snapshot.value as Map).isNotEmpty) {
-      Map<dynamic, dynamic>? userMap = snapshot.value as Map<dynamic, dynamic>;
+    if (snapshot.value != null && snapshot.value is Map) {
+      Map<dynamic, dynamic> userMap = snapshot.value as Map<dynamic, dynamic>;
 
       userMap.forEach((key, value) {
-        UserProfile user = UserProfile.fromJson(value);
-        users.add(user);
+        if (value is Map) {
+          UserProfile user = UserProfile.fromJson(value);
+          // Update the userId using the withUserId method
+          user = user.withUserId(key);
+          users.add(user);
+        }
       });
-
     }
-    return users;
+
+
+    // Filter the users by the provided userId
+    var filteredUsers = users.where((user) => user.userID == userId).toList();
+    return filteredUsers;
   }
+
 }

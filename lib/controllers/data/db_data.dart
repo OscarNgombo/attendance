@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:attendance/models/checkIn.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:rxdart/rxdart.dart' as rx_dart;
 
 class DbData extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -163,6 +165,21 @@ class DbData extends GetxController {
     return checkIns;
   }
 
+  Future<List<CheckInData>> getCheckOutData() async {
+    List<CheckInData> checkOut = [];
+    final query = FirebaseDatabase.instance.ref('checkOut').orderByChild('userID');
+    DataSnapshot snapshot = await query.get();
+
+    if (snapshot.value != null) {
+      Map<dynamic, dynamic>? checkOutMap = snapshot.value as Map<dynamic, dynamic>;
+      checkOutMap.forEach((key, value) {
+        CheckInData check = CheckInData.fromJson(value);
+        checkOut.add(check);
+      });
+    }
+    return checkOut;
+  }
+
   String? userData(String userId) {
     String? userName;
     User? currentUser = _auth.currentUser;
@@ -173,5 +190,18 @@ class DbData extends GetxController {
 
     return userName;
   }
+  Stream<List<CheckInData>> mergeCollections() {
+    return rx_dart.Rx.combineLatest2(
+      Stream.fromFuture(getCheckInData()),
+      Stream.fromFuture(getCheckOutData()),
+          (List<CheckInData> checkIn, List<CheckInData> checkOut) {
+        List<CheckInData> mergedData = [];
+        mergedData.addAll(checkIn);
+        mergedData.addAll(checkOut);
+        return mergedData;
+      },
+    );
+  }
+
 }
 
