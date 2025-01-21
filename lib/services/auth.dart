@@ -7,7 +7,6 @@ import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:path_provider/path_provider.dart';
 
-
 class AuthMethods extends GetxController {
   final auth = FirebaseAuth.instance;
   final control = Get.put(UpdateController());
@@ -35,13 +34,13 @@ class AuthMethods extends GetxController {
         'name': control.nameController.value.text.trim(),
         // Additional user details can be added here
       });
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException {
       // TODO
     }
     return null;
   }
 
-  //sign in with email and password
+// Sign in with email and password
   Future<UserCredential?> signIn({
     required String email,
     required String password,
@@ -49,12 +48,23 @@ class AuthMethods extends GetxController {
     try {
       await auth
           .signInWithEmailAndPassword(
-            email: control.signEmController.value.text.trim(),
-            password: control.signPasswordController.value.text.trim(),
-          )
-          .then((user) async => await Get.offAndToNamed("/home"));
+        email: email.trim(),
+        password: password.trim(),
+      )
+          .then((user) async {
+        Get.snackbar(
+          "Login Successful",
+          "You have successfully logged in",
+          duration: const Duration(seconds: 3),
+        );
+        await Get.offAndToNamed("/home");
+      });
     } on FirebaseAuthException catch (e) {
-      // TODO
+      Get.snackbar(
+        "Login Failed",
+        "Error: ${e.message}",
+        duration: const Duration(seconds: 3),
+      );
       log(e.toString());
     }
     return null;
@@ -112,6 +122,7 @@ class AuthMethods extends GetxController {
       appDir.deleteSync(recursive: true);
     }
   }
+
   Future<List<UserProfile>> getUsers(String userId) async {
     List<UserProfile> users = [];
     final query = FirebaseDatabase.instance.ref('users');
@@ -130,10 +141,8 @@ class AuthMethods extends GetxController {
       });
     }
 
-
     // Filter the users by the provided userId
     var filteredUsers = users.where((user) => user.userID == userId).toList();
     return filteredUsers;
   }
-
 }

@@ -22,24 +22,13 @@ class _LoginWidgetState extends State<LoginWidget> {
   void initState() {
     super.initState();
   }
-// @override
-//   void didUpdateWidget(covariant LoginWidget oldWidget) {
-//     controller.signEmController.value.dispose();
-//     // TODO: implement didUpdateWidget
-//     super.didUpdateWidget(oldWidget);
-//   }
 
+  // Method to handle user login
   void _submit() {
-    authService
-        .signIn(
-            email: controller.signEmController.value.text,
-            password: controller.signPasswordController.value.text)
-        .then((onValue) async => Get.snackbar(
-            "Login Successful", "You have successfully logged in",
-            duration: const Duration(seconds: 3)));
-    // User successfully authenticated, show success message and navigate to the home screen
-    // Future.delayed(const Duration(
-    //     seconds: 3)); // Adjust the duration to match the Snackbar's duration
+    authService.signIn(
+      email: controller.signEmController.value.text,
+      password: controller.signPasswordController.value.text,
+    );
   }
 
   @override
@@ -76,7 +65,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                         Container(
                           margin: const EdgeInsets.only(top: 8),
                           child: const Text(
-                            "Please enter your account here",
+                            "Please get Authenticated below",
                             style: TextStyle(color: Colors.black, fontSize: 16),
                             textAlign: TextAlign.center,
                           ),
@@ -146,10 +135,6 @@ class _LoginWidgetState extends State<LoginWidget> {
                       child: ElevatedButton(
                         onPressed: () {
                           _submit();
-                          // (controller.signEmController.value.isBlank == false &&
-                          //     controller.signPasswordController.value.isBlank==false)
-                          //     ? _submit
-                          //     : null;
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
@@ -177,7 +162,10 @@ class _LoginWidgetState extends State<LoginWidget> {
                         alignment: Alignment.center,
                         child: Text(
                           'Forgot Password?',
-                          style: TextStyle(color: Colors.black),
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14),
                         ),
                       ),
                       onTap: () => Get.toNamed('/password/recovery'),
@@ -186,7 +174,10 @@ class _LoginWidgetState extends State<LoginWidget> {
                         onPressed: () => Get.toNamed("/signup"),
                         child: const Text(
                           "New create Account?",
-                          style: TextStyle(color: Colors.black, fontSize: 14),
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14),
                         ))
                   ],
                 ),

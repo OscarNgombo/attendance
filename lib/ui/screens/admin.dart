@@ -1,4 +1,3 @@
-
 import 'package:attendance/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -29,7 +28,7 @@ class AdminView extends StatelessWidget {
           checkIns.sort((a, b) =>
               b.date.compareTo(a.date)); // Sort by most recent date first
           String? mostRecentDate =
-          checkIns.isNotEmpty ? checkIns[0].date : null;
+              checkIns.isNotEmpty ? checkIns[0].date : null;
 
           return ListView.builder(
             itemCount: checkIns.length,
@@ -72,60 +71,68 @@ class AdminView extends StatelessWidget {
                           List<CheckInData> checkOuts = dipSnapshot.data ?? [];
                           checkOuts.sort((a, b) => b.date.compareTo(a.date));
                           CheckInData? checkOutData =
-                          checkOuts.isNotEmpty ? checkOuts.first : null;
+                              checkOuts.isNotEmpty ? checkOuts.first : null;
 
-                          bool isRecentCheckInDateInCheckOutData = false; // Initialize the variable
+                          bool isRecentCheckInDateInCheckOutData =
+                              false; // Initialize the variable
 
                           if (checkOutData != null) {
                             int currentIndex = index;
-                            if (currentIndex >= 0 && currentIndex < checkOuts.length) {
-                              isRecentCheckInDateInCheckOutData = checkOuts[currentIndex].date == mostRecentDate;
+                            if (currentIndex >= 0 &&
+                                currentIndex < checkOuts.length) {
+                              isRecentCheckInDateInCheckOutData =
+                                  checkOuts[currentIndex].date ==
+                                      mostRecentDate;
                             }
                           }
                           return Card(
                             color: colorsCard(
                                 isActive, isRecentCheckInDateInCheckOutData),
-                              child: ListTile(
-                                title: Text('Name: $userName'),
-                                subtitle: OutlinedButton(
-                                  onPressed: ()=>defaultListDialog(user.displayName,user.phoneNumber,user.email),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      Row(
-                                        crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                        mainAxisAlignment:
-                                        MainAxisAlignment.start,
-                                        children: [
-                                          Text("Date: ${checkInData.date}"),
-                                        ],
-                                      ),
-                                      Row(
-                                        crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                        mainAxisAlignment:
-                                        MainAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                              "Check In time: ${checkInData.time}"),
-                                          const SizedBox(width: 10,),
-                                          ((checkInData.date ==
-                                              checkOutData?.date) &&
-                                              (checkInData.userID ==
-                                                  checkOutData?.userID))
-                                              ? Text(
-                                              "Check Out time: ${checkOutData != null ? checkOutData.time : 'Not available'}")
-                                              : const Text("Checkout Time:  ")
-                                        ],
-                                      ),
-                                    ],
-                                  ),
+                            child: ListTile(
+                              title: Text('Name: $userName'),
+                              subtitle: OutlinedButton(
+                                onPressed: () => defaultListDialog(
+                                    user.displayName,
+                                    user.phoneNumber,
+                                    user.email),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Text("Date: ${checkInData.date}"),
+                                      ],
+                                    ),
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                            "Check In time: ${checkInData.time}"),
+                                        const SizedBox(
+                                          width: 10,
+                                        ),
+                                        ((checkInData.date ==
+                                                    checkOutData?.date) &&
+                                                (checkInData.userID ==
+                                                    checkOutData?.userID))
+                                            ? Text(
+                                                "Check Out time: ${checkOutData != null ? checkOutData.time : 'Not available'}")
+                                            : const Text("Checkout Time:  ")
+                                      ],
+                                    ),
+                                  ],
                                 ),
                               ),
-
+                            ),
                           );
                         }
                       },
@@ -148,21 +155,15 @@ class AdminView extends StatelessWidget {
       return Colors.greenAccent;
     }
     return Colors.redAccent;
-
   }
 
-  void defaultListDialog(String displayName,String phone,String email) {
-    Future.delayed(const Duration(seconds: 1), () {
-    });
+  void defaultListDialog(String displayName, String phone, String email) {
+    Future.delayed(const Duration(seconds: 1), () {});
     Get.defaultDialog(
         title: 'Attendance',
         middleText: displayName,
         content: Column(
-          children: [
-            Text(displayName),
-            Text(phone),
-            Text(email)
-          ],
+          children: [Text(displayName), Text(phone), Text(email)],
         ),
         confirmTextColor: Colors.amberAccent,
         barrierDismissible: false,

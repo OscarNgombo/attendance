@@ -13,12 +13,14 @@ class CheckInWidget extends StatefulWidget {
     required this.authService,
     required this.checkIn,
     required this.userId,
+    required this.reloadState, // Added callback for reloading state
   });
 
   final LocationService locationService;
   final AuthMethods authService;
   final DbData checkIn;
   final String userId;
+  final VoidCallback reloadState; // Added callback for reloading state
 
   @override
   State<CheckInWidget> createState() => _CheckInWidgetState();
@@ -27,7 +29,7 @@ class CheckInWidget extends StatefulWidget {
 class _CheckInWidgetState extends State<CheckInWidget> {
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
+    return FutureBuilder<Position>(
       future: widget.locationService.fetchLocation(),
       builder: (BuildContext context, AsyncSnapshot<Position> snapshot) {
         if (snapshot.hasData) {
@@ -48,23 +50,25 @@ class _CheckInWidgetState extends State<CheckInWidget> {
                   if (distance <= 34)
                     Column(
                       children: [
-                        FutureBuilder(
+                        FutureBuilder<List<UserProfile>>(
                           future: widget.authService.getUsers(widget.userId),
-                          builder: (context,snapshot){
-                            if (snapshot.connectionState == ConnectionState.waiting) {
-                              return const Center(child: CircularProgressIndicator());
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Center(
+                                  child: CircularProgressIndicator());
                             } else if (snapshot.hasError) {
-                              return Center(child: Text('Error: ${snapshot.error}'));
-                            }
-                            else{
+                              return Center(
+                                  child: Text('Error: ${snapshot.error}'));
+                            } else {
                               List<UserProfile> users = snapshot.data ?? [];
                               return Padding(
-                              padding: const EdgeInsets.all(8.0),
-                            child: ListTile(
-                            title: Text(
-                            'Hello ${users[0].displayName ?? "User"}, Good to see you today please check in to work below!'),
-                            ),
-                            );
+                                padding: const EdgeInsets.all(8.0),
+                                child: ListTile(
+                                  title: Text(
+                                      'Hello ${users[0].displayName}, Good to see you today please check in to work below!'),
+                                ),
+                              );
                             }
                           },
                         ),
@@ -72,16 +76,15 @@ class _CheckInWidgetState extends State<CheckInWidget> {
                           padding: const EdgeInsets.only(top: 16, bottom: 10),
                           child: ElevatedButton(
                             onPressed: () {
-                              // Add your onPressed functionality here
-                              setState(() {
-                                widget.checkIn
-                                    .createCheckIn(
-                                    userId: widget.userId,
-                                    location:
-                                    "${snapshot.data!.latitude}, ${snapshot.data!.longitude}",
-                                    deviceId:
-                                    widget.locationService.deviceIdentifier)
-                                    .then((_) async => Get.snackbar(
+                              widget.checkIn
+                                  .createCheckIn(
+                                      userId: widget.userId,
+                                      location:
+                                          "${snapshot.data!.latitude}, ${snapshot.data!.longitude}",
+                                      deviceId: widget
+                                          .locationService.deviceIdentifier)
+                                  .then((_) async {
+                                Get.snackbar(
                                   "Check In",
                                   "You have successfully checked in to work!",
                                   duration: const Duration(seconds: 3),
@@ -94,9 +97,10 @@ class _CheckInWidgetState extends State<CheckInWidget> {
                                     Icons.check_circle,
                                     color: Colors.white,
                                   ),
-                                ));
+                                );
+                                widget
+                                    .reloadState(); // Call the callback to reload state
                               });
-
                             },
                             style: ButtonStyle(
                               backgroundColor: WidgetStateProperty.all(
@@ -130,7 +134,6 @@ class _CheckInWidgetState extends State<CheckInWidget> {
                               style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.w600,
-                                // Add any other relevant styles here
                               ),
                             ),
                           ),
@@ -143,7 +146,6 @@ class _CheckInWidgetState extends State<CheckInWidget> {
                               style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w400,
-                                // Add any other relevant styles here
                               ),
                             ),
                           ),
@@ -154,8 +156,7 @@ class _CheckInWidgetState extends State<CheckInWidget> {
               ),
             ),
           );
-        }
-        else if (snapshot.hasError) {
+        } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         }
         return const Center(child: CircularProgressIndicator());

@@ -11,7 +11,6 @@ import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   runApp(const MyApp());
@@ -26,12 +25,14 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final authService = Get.put(AuthMethods());
+
   @override
   void initState() {
     super.initState();
-    checkUserLoggedInAndRemove;
+    checkUserLoggedInAndRemove();
   }
 
+  // Check if the user is logged in and sign out if true
   void checkUserLoggedInAndRemove() {
     if (authService.isUserLoggedIn()) {
       authService.signOut();
@@ -47,7 +48,6 @@ class _MyAppState extends State<MyApp> {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      // home: const MyHomePage(title: 'Home Page'),
       scrollBehavior: const MaterialScrollBehavior(),
       debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.light,
@@ -55,13 +55,15 @@ class _MyAppState extends State<MyApp> {
       initialRoute: authService.isUserLoggedIn() ? '/home' : '/login',
       getPages: [
         GetPage(
-            name: '/login',
-            page: () => const LoginWidget(),
-            binding: AuthBinding()),
+          name: '/login',
+          page: () => const LoginWidget(),
+          binding: AuthBinding(),
+        ),
         GetPage(
-            name: '/signup',
-            page: () => const SignUpWidget(),
-            binding: AuthBinding()),
+          name: '/signup',
+          page: () => const SignUpWidget(),
+          binding: AuthBinding(),
+        ),
         GetPage(
           name: '/home',
           page: () => const MyHomePage(
