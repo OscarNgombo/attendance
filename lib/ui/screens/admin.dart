@@ -2,7 +2,7 @@ import 'package:attendance/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:attendance/controllers/data/db_data.dart';
-import 'package:attendance/models/checkIn.dart';
+import 'package:attendance/models/check_in.dart';
 import 'package:attendance/services/auth.dart';
 
 class AdminView extends StatelessWidget {

@@ -1,0 +1,2 @@
+/home/oscar/work/flutterProj/attendance/android/app/.cxx/Debug/47681w1u/x86_64/CMakeFiles/edit_cache.dir
+/home/oscar/work/flutterProj/attendance/android/app/.cxx/Debug/47681w1u/x86_64/CMakeFiles/rebuild_cache.dir

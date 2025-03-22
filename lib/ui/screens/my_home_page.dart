@@ -2,8 +2,8 @@ import 'package:attendance/controllers/data/db_data.dart';
 import 'package:attendance/controllers/geolocator/geolocator_controller.dart';
 import 'package:attendance/services/auth.dart';
 import 'package:attendance/ui/screens/admin.dart';
-import 'package:attendance/ui/widgets/checkIn.dart';
-import 'package:attendance/ui/widgets/checkOut.dart';
+import 'package:attendance/ui/widgets/check_in.dart';
+import 'package:attendance/ui/widgets/check_out.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

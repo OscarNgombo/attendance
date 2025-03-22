@@ -32,8 +32,7 @@ class LocationService extends GetxController {
     }
 
     // If permissions are granted, return the current location
-    return await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+    return await Geolocator.getCurrentPosition();
   }
 
   calculateDistance(double currentLat, double currentLon) {

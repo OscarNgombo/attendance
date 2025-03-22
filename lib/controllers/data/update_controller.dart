@@ -10,6 +10,47 @@ class UpdateController extends GetxController {
   Rx<TextEditingController> signEmController = TextEditingController().obs;
   Rx<TextEditingController> signPasswordController =
       TextEditingController().obs;
+  Rx<String?> nameErrorText = Rx<String?>(null);
+  Rx<String?> emailErrorText = Rx<String?>(null);
+  Rx<String?> phoneErrorText = Rx<String?>(null);
+  Rx<String?> errorText = Rx<String?>(null);
+  Rx<String?> errorMatchText = Rx<String?>(null);
+
+  void validateAll() {
+    nameErrorText.value =
+        nameController.value.text.isEmpty ? 'Name cannot be empty' : null;
+    emailErrorText.value = emailController.value.text.isEmpty
+        ? 'Email cannot be empty'
+        : emailController.value.text.contains('@') &&
+                emailController.value.text.contains('.')
+            ? null
+            : 'Invalid email';
+    phoneErrorText.value = phoneController.value.text.isEmpty
+        ? 'Phone number cannot be empty'
+        : phoneController.value.text.length < 10
+            ? 'Phone number must be at least 10 digits'
+            : phoneController.value.text.length > 10
+                ? 'Phone number must be at most 10 digits'
+                : null;
+
+    final password = passwordController.value.text;
+    errorText.value =
+        password.length < 6 ? 'Password must be at least 6 characters' : null;
+
+    final passwordConfirm = password1Controller.value.text;
+    errorMatchText.value =
+        password != passwordConfirm ? 'Passwords do not match' : null;
+
+    update(); // Notify listeners of changes
+  }
+
+  bool isValid() {
+    return nameErrorText.value == null &&
+        emailErrorText.value == null &&
+        phoneErrorText.value == null &&
+        errorText.value == null &&
+        errorMatchText.value == null;
+  }
 
   @override
   void onInit() {
@@ -33,62 +74,5 @@ class UpdateController extends GetxController {
     signPasswordController.value.dispose();
     signEmController.value.dispose();
     super.dispose();
-  }
-
-  String? get nameErrorText {
-    final text = nameController.value.text;
-    if (text.isEmpty) {
-      return 'Please name can\'t be empty';
-    }
-    return null;
-  }
-
-  String? get emailErrorText {
-    final text = emailController.value.text;
-    if (text.isEmpty) {
-      return null;
-    }
-    if (text.isEmail == false) {
-      return 'Please enter correct email';
-    }
-    return null;
-  }
-
-  String? get phoneErrorText {
-    final text = phoneController.value.text;
-    if (text.isEmpty) {
-      return null;
-    }
-    if (text.length < 10) {
-      return 'Too shot for  a number';
-    }
-    if (text.length > 10) {
-      return 'Too long for phone number';
-    }
-    return null;
-  }
-
-  String? get errorText {
-    final text = passwordController.value.text;
-
-    if (text.isEmpty) {
-      return null;
-    }
-    if (text.length < 6) {
-      return 'Too shot has to be 6 digits';
-    }
-    return null;
-  }
-
-  String? get errorMatchText {
-    final text = passwordController.value.text;
-    final text1 = password1Controller.value.text;
-    if (text.isEmpty || text1.isEmpty) {
-      return 'Password cannot be empty';
-    }
-    if (text != text1) {
-      return 'Password does not match';
-    }
-    return null;
   }
 }
